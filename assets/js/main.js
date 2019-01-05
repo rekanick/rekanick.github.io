@@ -1,166 +1,185 @@
 /*
-	Solid State by HTML5 UP
+	Phantom by HTML5 UP
 	html5up.net | @ajlkn
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
 
 (function($) {
 
-	"use strict";
+	var	$window = $(window),
+		$body = $('body');
 
-	skel.breakpoints({
-		xlarge:	'(max-width: 1680px)',
-		large:	'(max-width: 1280px)',
-		medium:	'(max-width: 980px)',
-		small:	'(max-width: 736px)',
-		xsmall:	'(max-width: 480px)'
-	});
+	// Breakpoints.
+		breakpoints({
+			xlarge:   [ '1281px',  '1680px' ],
+			large:    [ '981px',   '1280px' ],
+			medium:   [ '737px',   '980px'  ],
+			small:    [ '481px',   '736px'  ],
+			xsmall:   [ '361px',   '480px'  ],
+			xxsmall:  [ null,      '360px'  ]
+		});
 
-	$(function() {
+	// Play initial animations on page load.
+		$window.on('load', function() {
+			window.setTimeout(function() {
+				$body.removeClass('is-preload');
+			}, 100);
+		});
 
-		var	$window = $(window),
-			$body = $('body'),
-			$header = $('#header'),
-			$banner = $('#banner');
+	// Touch?
+		if (browser.mobile)
+			$body.addClass('is-touch');
 
-		// Disable animations/transitions until the page has loaded.
-			$body.addClass('is-loading');
+	// Forms.
+		var $form = $('form');
 
-			$window.on('load', function() {
-				window.setTimeout(function() {
-					$body.removeClass('is-loading');
-				}, 100);
+		// Auto-resizing textareas.
+			$form.find('textarea').each(function() {
+
+				var $this = $(this),
+					$wrapper = $('<div class="textarea-wrapper"></div>'),
+					$submits = $this.find('input[type="submit"]');
+
+				$this
+					.wrap($wrapper)
+					.attr('rows', 1)
+					.css('overflow', 'hidden')
+					.css('resize', 'none')
+					.on('keydown', function(event) {
+
+						if (event.keyCode == 13
+						&&	event.ctrlKey) {
+
+							event.preventDefault();
+							event.stopPropagation();
+
+							$(this).blur();
+
+						}
+
+					})
+					.on('blur focus', function() {
+						$this.val($.trim($this.val()));
+					})
+					.on('input blur focus --init', function() {
+
+						$wrapper
+							.css('height', $this.height());
+
+						$this
+							.css('height', 'auto')
+							.css('height', $this.prop('scrollHeight') + 'px');
+
+					})
+					.on('keyup', function(event) {
+
+						if (event.keyCode == 9)
+							$this
+								.select();
+
+					})
+					.triggerHandler('--init');
+
+				// Fix.
+					if (browser.name == 'ie'
+					||	browser.mobile)
+						$this
+							.css('max-height', '10em')
+							.css('overflow-y', 'auto');
+
 			});
 
-		// Fix: Placeholder polyfill.
-			$('form').placeholder();
+	// Menu.
+		var $menu = $('#menu');
 
-		// Prioritize "important" elements on medium.
-			skel.on('+medium -medium', function() {
-				$.prioritize(
-					'.important\\28 medium\\29',
-					skel.breakpoint('medium').active
-				);
-			});
+		$menu.wrapInner('<div class="inner"></div>');
 
-		// Header.
-			if (skel.vars.IEVersion < 9)
-				$header.removeClass('alt');
+		$menu._locked = false;
 
-			if ($banner.length > 0
-			&&	$header.hasClass('alt')) {
+		$menu._lock = function() {
 
-				$window.on('resize', function() { $window.trigger('scroll'); });
+			if ($menu._locked)
+				return false;
 
-				$banner.scrollex({
-					bottom:		$header.outerHeight(),
-					terminate:	function() { $header.removeClass('alt'); },
-					enter:		function() { $header.addClass('alt'); },
-					leave:		function() { $header.removeClass('alt'); }
-				});
+			$menu._locked = true;
 
-			}
+			window.setTimeout(function() {
+				$menu._locked = false;
+			}, 350);
 
-		// Menu.
-			var $menu = $('#menu');
+			return true;
 
-			$menu._locked = false;
+		};
 
-			$menu._lock = function() {
+		$menu._show = function() {
 
-				if ($menu._locked)
-					return false;
+			if ($menu._lock())
+				$body.addClass('is-menu-visible');
 
-				$menu._locked = true;
+		};
 
-				window.setTimeout(function() {
-					$menu._locked = false;
-				}, 350);
+		$menu._hide = function() {
 
-				return true;
+			if ($menu._lock())
+				$body.removeClass('is-menu-visible');
 
-			};
+		};
 
-			$menu._show = function() {
+		$menu._toggle = function() {
 
-				if ($menu._lock())
-					$body.addClass('is-menu-visible');
+			if ($menu._lock())
+				$body.toggleClass('is-menu-visible');
 
-			};
+		};
 
-			$menu._hide = function() {
+		$menu
+			.appendTo($body)
+			.on('click', function(event) {
+				event.stopPropagation();
+			})
+			.on('click', 'a', function(event) {
 
-				if ($menu._lock())
-					$body.removeClass('is-menu-visible');
+				var href = $(this).attr('href');
 
-			};
+				event.preventDefault();
+				event.stopPropagation();
 
-			$menu._toggle = function() {
+				// Hide.
+					$menu._hide();
 
-				if ($menu._lock())
-					$body.toggleClass('is-menu-visible');
+				// Redirect.
+					if (href == '#menu')
+						return;
 
-			};
+					window.setTimeout(function() {
+						window.location.href = href;
+					}, 350);
 
-			$menu
-				.appendTo($body)
-				.on('click', function(event) {
+			})
+			.append('<a class="close" href="#menu">Close</a>');
 
-					event.stopPropagation();
+		$body
+			.on('click', 'a[href="#menu"]', function(event) {
 
-					// Hide.
+				event.stopPropagation();
+				event.preventDefault();
+
+				// Toggle.
+					$menu._toggle();
+
+			})
+			.on('click', function(event) {
+
+				// Hide.
+					$menu._hide();
+
+			})
+			.on('keydown', function(event) {
+
+				// Hide on escape.
+					if (event.keyCode == 27)
 						$menu._hide();
 
-				})
-				.find('.inner')
-					.on('click', '.close', function(event) {
-
-						event.preventDefault();
-						event.stopPropagation();
-						event.stopImmediatePropagation();
-
-						// Hide.
-							$menu._hide();
-
-					})
-					.on('click', function(event) {
-						event.stopPropagation();
-					})
-					.on('click', 'a', function(event) {
-
-						var href = $(this).attr('href');
-
-						event.preventDefault();
-						event.stopPropagation();
-
-						// Hide.
-							$menu._hide();
-
-						// Redirect.
-							window.setTimeout(function() {
-								window.location.href = href;
-							}, 350);
-
-					});
-
-			$body
-				.on('click', 'a[href="#menu"]', function(event) {
-
-					event.stopPropagation();
-					event.preventDefault();
-
-					// Toggle.
-						$menu._toggle();
-
-				})
-				.on('keydown', function(event) {
-
-					// Hide on escape.
-						if (event.keyCode == 27)
-							$menu._hide();
-
-				});
-
-	});
+			});
 
 })(jQuery);
