@@ -1941,9 +1941,9 @@ $(document).ready(function () {
         var instaFeedStyle1 = new Instafeed({
             target: 'instaFeed-style1',
             get: 'user',
-            userId: 5640046896,
+            userId: 9281797004,
             limit: '8',
-            accessToken: '5640046896.1677ed0.f7cd85767e124a9f9f8d698cb33252a0',
+            accessToken: '9281797004.1677ed0.d2434970ee004e2b8d2fd1cc3623e0fe',
             resolution: "low_resolution",
             error: {
                 template: '<div class="col-12"><span class=text-center>No Images Found</span></div>'
@@ -1957,9 +1957,9 @@ $(document).ready(function () {
         var instaFeedAside = new Instafeed({
             target: 'instaFeed-aside',
             get: 'user',
-            userId: 5640046896,
+            userId: 9281797004,
             limit: '6',
-            accessToken: '5640046896.1677ed0.f7cd85767e124a9f9f8d698cb33252a0',
+            accessToken: '9281797004.1677ed0.d2434970ee004e2b8d2fd1cc3623e0fe',
             resolution: "low_resolution",
             error: {
                 template: '<div class="col-12"><span class=text-center>No Images Found</span></div>'
@@ -1973,9 +1973,9 @@ $(document).ready(function () {
         var instaFeedFooter = new Instafeed({
             target: 'instaFeed-footer',
             get: 'user',
-            userId: 5640046896,
+            userId: 9281797004,
             limit: '6',
-            accessToken: '5640046896.1677ed0.f7cd85767e124a9f9f8d698cb33252a0',
+            accessToken: '9281797004.1677ed0.d2434970ee004e2b8d2fd1cc3623e0fe',
             resolution: "low_resolution",
             error: {
                 template: '<div class="col-12"><span class=text-center>No Images Found</span></div>'
